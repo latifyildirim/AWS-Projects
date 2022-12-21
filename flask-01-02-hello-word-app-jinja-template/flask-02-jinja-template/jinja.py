@@ -6,10 +6,10 @@ app = Flask(__name__)
 def head():
     return render_template('index.html', number1 = 112500, number2 = 225200)
 
-@app.route('/mult')
+@app.route('/mult/<int:x>,<int:y>')
 def number(x,y):
     # x = 15
-    # y = 20 
+    # y = 20
     return render_template('body.html', num1 = x, num2 = y, mult = x*y)
 
 if __name__ == '__main__':
