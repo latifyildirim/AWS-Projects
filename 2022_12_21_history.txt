@@ -1,0 +1,31 @@
+    1  sudo yum update –y
+    2  sudo yum install python3 –y
+    3  python3 –version
+    4  python3 –-version
+    5  sudo pip3 install flask
+    6  sudo yum install git wget
+    7  sudo yum install vim
+    8  wget https://raw.githubusercontent.com/latifyildirim/flask-project/main/flask-01-02-hello-word-app-jinja-template/flask-01-02-hello-word-app/hello-word-app.py
+    9  clear
+   10  python3 hello-word-app.py 
+   11  ls -la
+   12  chmod 777 hello-word-app.py 
+   13  python3 hello-word-app.py
+   14  python hello-word-app.py
+   15  python3 hello-word-app.py
+   16  cp hello-word-app.py /var/www/html
+   17  cp hello-word-app.py /var/www/html/
+   18  cp ./hello-word-app.py /var/www/html/
+   19  cd /var/www/html
+   20  cd /var
+   21  cd /www
+   22  ls
+   23  cd ~
+   24  sudo python hello-word-app.py
+   25  sudo python3 hello-word-app.py
+   26  clera
+   27  clear
+   28  aws s3 ls
+   29  sudo aws s3 ls
+   30  history
+   31  history > 2022_12_21_history.txt
