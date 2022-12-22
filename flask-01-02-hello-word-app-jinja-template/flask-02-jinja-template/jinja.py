@@ -13,4 +13,4 @@ def number(x,y):
     return render_template('body.html', num1 = x, num2 = y, mult = x*y)
 
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    app.run(host='0.0.0.0',port=80, debug=True)
