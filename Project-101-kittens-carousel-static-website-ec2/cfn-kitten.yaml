@@ -26,7 +26,7 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0 
-  LogicalID:
+  KittenEc2User:
     Type: AWS::EC2::Instance
     Properties: 
       ImageId: ami-0b5eea76982371e91
@@ -34,6 +34,29 @@ Resources:
       KeyName: firstkey
       SecurityGroupIds:
         - !Ref KittenSecurityGroup  
-      Tag
-      UserData: "String" 
+      Tags:
+        - Key: Name
+          Value: !Sub Web Server of $(AWS::StackName)
+      UserData: !Base64 |
+        #! /bin/bash
+
+        yum update -y
+        yum install httpd -y
+        FOLDER="https://raw.githubusercontent.com/latifyildirim/flask-project/main/Project-101-kittens-carousel-static-website-ec2/static-web"
+        cd /var/www/html
+        wget $FOLDER/index.html
+        wget $FOLDER/cat0.jpg
+        wget $FOLDER/cat1.jpg
+        wget $FOLDER/cat2.jpg
+        wget $FOLDER/cat3.png
+        systemctl start httpd
+        systemctl enable httpd
+
 Outputs:
+  KittenURL:
+    Description: Information about the value
+    Value: !Sub 
+      - http://${PublicAddress}
+      - PublicAddress: !GetAtt KittenEc2User.PublicDnsName 
+
+  
