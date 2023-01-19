@@ -33,6 +33,7 @@ Resources:
       InstanceType: t2.micro 
       KeyName: firstkey
       SecurityGroupIds:
-        -!Ref KittenSecurityGroup  
+        - !Ref KittenSecurityGroup  
+      Tag
       UserData: "String" 
 Outputs:
