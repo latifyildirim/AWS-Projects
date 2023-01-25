@@ -154,10 +154,6 @@ Ten         Warning with "Not Valid! Please enter a number between 1 and 3999, i
 
 - Step 7: Deploy your application on AWS Cloud using AWS Cli to showcase your app within your team.
 
-## Notes
-
-- Customize the application by hard-coding your name for the `developer_name` variable within html templates.
-
 ## Resources
 
 - [Python Flask Framework](https://flask.palletsprojects.com/en/1.1.x/quickstart/)
