@@ -22,7 +22,7 @@ aws sts get-caller-identity --query Account --output text
 
 ```bash
 aws ec2 create-security-group \
-    --group-name roman_numbers_sec_grp \
+    --group-name roman \
     --description "This Sec Group is to allow ssh and http from anywhere"
 ```
 
@@ -76,7 +76,7 @@ aws ec2 run-instances \
     --count 1 \
     --instance-type t2.micro \
     --key-name firstkey # write your key-namewithout .pem \
-    --security-groups roman_numbers_sec_grp \
+    --security-groups roman \
     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=roman_numbers}]' \
     --user-data file:///home/ec2-user/userdata.sh
 ```
