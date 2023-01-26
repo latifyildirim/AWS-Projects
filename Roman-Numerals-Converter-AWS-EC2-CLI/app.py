@@ -27,8 +27,8 @@ def main_post():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    app.run(port=5000)
-    # app.run(host='0.0.0.0', port=80)
+    #app.run(port=5000)
+    app.run(host='0.0.0.0', port=80)
 
 
 # isdecimal():the function is used to check if all the letters in the string are numbers or not 
