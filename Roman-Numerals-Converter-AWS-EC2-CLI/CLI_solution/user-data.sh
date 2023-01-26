@@ -3,7 +3,7 @@ yum update -y
 yum install python3 -y
 pip3 install flask
 cd /home/ec2-user
-FOLDER="https://raw.githubusercontent.com/armando-cla/My-projects/main/Project-001-Roman-Numerals-Converter"
+FOLDER="https://raw.githubusercontent.com/latifyildirim/projects/main/Roman-Numerals-Converter-AWS-EC2-CLI"
 wget ${FOLDER}/app.py
 mkdir templates && cd templates
 wget ${FOLDER}/templates/index.html
