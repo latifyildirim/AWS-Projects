@@ -3,62 +3,58 @@ Description: |
   CloudFormation Template for Phonebook Application. This template creates Application Load Balancer 
   with Auto Scaling Group of Amazon Linux 2 (ami-0dfcb1ef8550277af) EC2 Instances which host Python Flask Web Application. EC2 instances are placed within WebServerSecurityGroup which allows http (80) connections only from ALBSecurityGroup, and allows tcp(3306) connections only within itself. RDS DB instance is placed within WebServerSecurityGroup so that Database Server can communicate with Web Servers. Application Load Balancer is placed within ALBSecurityGroup which allows http (80) connections from anywhere. WebServerASG Auto Scaling Group is using the WebServerLT Launch Template in order to spin up instances needed. WebServerLT Launch Template is configured to prepare Python Flask environment on EC2, and to deploy Phonebook Application on Flask Server after downloading the app code from Github repository.
 
-
 Parameters:
   MyVPC:
     Description: VPC Id of your existing account
     Type: AWS::EC2::VPC::Id
-
   KeyName:
-    Description: Please enter your Key pair
-    Type: AWS::EC2::KeyPair::KeyName
-
+    Description: Keyi sec
+    Type: AWS::EC2::KeyPair::KeyName 
   Subnets:
-    Description: Please select your subnets used by ALB
-    Type: List<AWS::EC2::Subnet::Id>
-  
+    Description: Subnet sec
+    Type: List<AWS::EC2::Subnet::Id>  
+
 Resources:
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable HTTP for Application Load Balancer
+      GroupDescription: HTTP acik
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
+          CidrIp: 0.0.0.0/0 
       VpcId: !Ref MyVPC
-
-  WebServerSecurityGroup:
+  WebserverSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable HTTP for Flask Web Server and SSH for getting into EC2
+      GroupDescription: SSH acik HTTP yalniz ALB icin acik 
       SecurityGroupIngress:
-         - IpProtocol: tcp
-           FromPort: 22
-           ToPort: 22
-           CidrIp: 0.0.0.0/0
-         - IpProtocol: tcp
-           FromPort: 80
-           ToPort: 80
-           SourceSecurityGroupId: !GetAtt ALBSecurityGroup.GroupId
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !GetAtt ALBSecurityGroup.GroupId
       VpcId: !Ref MyVPC
 
-  WebServerLT:
+  LT:
     Type: AWS::EC2::LaunchTemplate
     Properties:
-      LaunchTemplateData:
-        ImageId: ami-0dfcb1ef8550277af
+      LaunchTemplateData: 
+        ImageId: ami-0dfcb1ef8550277af 
         InstanceType: t2.micro
-        KeyName: !Ref KeyName
+        KeyName: !Ref KeyName 
         SecurityGroupIds:
-          - !GetAtt WebServerSecurityGroup.GroupId
-        TagSpecifications:
+          - !GetAtt WebserverSecurityGroup.GroupId 
+        TagSpecifications: 
           - ResourceType: instance
-            Tags: 
+            Tags:
               - Key: Name
                 Value: !Sub Web Server of ${AWS::StackName} Stack
-        UserData: 
+        UserData:
           Fn::Base64:
             !Sub 
               - |
@@ -68,90 +64,86 @@ Resources:
                 pip3 install flask
                 pip3 install flask_mysql
                 echo "${MyDBURI}" > /home/ec2-user/dbserver.endpoint
-                TOKEN="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"
-                FOLDER="https://$TOKEN@raw.githubusercontent.com/okti3535/test-private-myproject-phonebook/main"
+                TOKEN="Xxxxxxxxxxx---TOKEN---Buraya-gir---xxxxxxxxxX"
+                FOLDER="https://$TOKEN@raw.githubusercontent.com/latifyildirim/Phonebook-Application/main"
                 curl -s --create-dirs -o "/home/ec2-user/templates/index.html" -L "$FOLDER"/templates/index.html
                 curl -s --create-dirs -o "/home/ec2-user/templates/add-update.html" -L "$FOLDER"/templates/add-update.html
                 curl -s --create-dirs -o "/home/ec2-user/templates/delete.html" -L "$FOLDER"/templates/delete.html
                 curl -s --create-dirs -o "/home/ec2-user/app.py" -L "$FOLDER"/phonebook-app.py
                 python3 /home/ec2-user/app.py
-              - MyDBURI: !GetAtt MyDatabaseServer.Endpoint.Address
-  
-  WebServerTG:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
+              - MyDBURI: !GetAtt DBInstance.Endpoint.Address
+  TG:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties: 
+      HealthyThresholdCount: 2 
       Port: 80
-      Protocol: HTTP
-      TargetType: instance
+      Protocol: HTTP 
+      TargetType: instance 
       UnhealthyThresholdCount: 3
-      HealthyThresholdCount: 2
       VpcId: !Ref MyVPC
-
-  ApplicationLoadBalancer:
-    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      IpAddressType: ipv4
+      IpAddressType: ipv4 
       Scheme: internet-facing
       SecurityGroups:
-        - !GetAtt ALBSecurityGroup.GroupId
-      Subnets: !Ref Subnets
+        - !GetAtt ALBSecurityGroup.GroupId 
+      Subnets: !Ref Subnets 
       Type: application
-
   ALBListener:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    Properties:
-      DefaultActions: #required
-        - TargetGroupArn: !Ref WebServerTG
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties: 
+      DefaultActions: # Required
+        - TargetGroupArn: !Ref TG
           Type: forward
-      LoadBalancerArn: !Ref ApplicationLoadBalancer #required
-      Port: 80 #required
-      Protocol: HTTP #required
-
-  WebServerASG:
-    Type: "AWS::AutoScaling::AutoScalingGroup"
-    Properties:
+      LoadBalancerArn: !Ref ALB # Required
+      Port: 80 # Required
+      Protocol: HTTP  # Required
+  ASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties: 
       AvailabilityZones:
         !GetAZs ""
-      DesiredCapacity: 2
+      DesiredCapacity: 2 
       HealthCheckGracePeriod: 300
-      HealthCheckType: ELB
+      HealthCheckType: ELB 
       LaunchTemplate:
-        LaunchTemplateId: !Ref WebServerLT
-        Version: !GetAtt WebServerLT.LatestVersionNumber
-      MaxSize: 3 #required
-      MinSize: 1 #required
+        LaunchTemplateId: !Ref LT 
+        Version: !GetAtt LT.LatestVersionNumber 
+      MaxSize: 3 
+      MinSize: 1  
       TargetGroupARNs:
-        - !Ref WebServerTG
+        - !Ref TG 
 
-  MyDBSecurityGroup:
+  DBSecurityGroup:
     Type: AWS::RDS::DBSecurityGroup
     Properties:
       DBSecurityGroupIngress: # Required
-        - EC2SecurityGroupId: !GetAtt WebServerSecurityGroup.GroupId
-      GroupDescription: Back-end Database # Required
+        - EC2SecurityGroupId: !GetAtt WebserverSecurityGroup.GroupId 
+      GroupDescription: Back-end Database # Required 
 
-  MyDatabaseServer:
+  DBInstance:
     Type: AWS::RDS::DBInstance
-    Properties: 
+    Properties:
       AllocatedStorage: 20
-      AllowMajorVersionUpgrade: false
-      AutoMinorVersionUpgrade: false
-      BackupRetentionPeriod: 0
+      AllowMajorVersionUpgrade: false 
+      AutoMinorVersionUpgrade: false 
+      BackupRetentionPeriod: 0 
       DBInstanceClass: db.t2.micro
-      DBInstanceIdentifier: phonebook-app
-      DBName: clarusway_phonebook
-      DBSecurityGroups: 
-        - !Ref MyDBSecurityGroup
+      DBInstanceIdentifier: phonebook-app # Eger instance i stop edersek baska bir 
+      DBName: clarusway_phonebook         # isimle ayaga kaldirmak gerek 
+      DBSecurityGroups:
+        - !Ref DBSecurityGroup 
       Engine: MySQL
-      EngineVersion: 8.0.28
-      MasterUsername: admin
+      EngineVersion: 8.0.28 
+      MasterUsername: admin 
       MasterUserPassword: awsdevops
-      Port: 3306
-      PubliclyAccessible: true
+      Port: 3306 
+      PubliclyAccessible: true 
 
 Outputs:
   WebsiteURL:
     Value: !Sub 
       - http://${ALBAddress}
-      - ALBAddress: !GetAtt ApplicationLoadBalancer.DNSName
+      - ALBAddress: !GetAtt ALB.DNSName
     Description: Phonebook Application Load Balancer URL
