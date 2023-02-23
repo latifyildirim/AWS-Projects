@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Kittens Carousel is a static website application deployed on AWS Simple Storage Service (S3), served through Cloudfront and Route 53 using AWS Cloudformation Service.
+Parameters:
+  DomainName:
+    Description: DNS Name of existing Amazon Route 53 hosted zone. exp. begis.link
+    Type: AWS::Route53::HostedZone::Id 
+
+  FullDomainName:
+    Description: Full domain name for the App. ex. www.begis.link
+    Type: String
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      AccessControl: PublicRead 
+      BucketName: !Ref FullDomainName    
+      WebsiteConfiguration: 
+        IndexDocument: index.html 
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket # Required
+      PolicyDocument: # Required
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref s3Bucket
+                - /*
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties: 
+      CertificateTransparencyLoggingPreference: ENABLE
+      DomainName: !Ref FullDomainName # Required
+      DomainValidationOptions:
+        - DomainName: !Ref FullDomainName
+          HostedZoneId: !Ref DomainName 
+      ValidationMethod: DNS
+  CF:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          -
+        CNAMEs:
+          -
+        CacheBehaviors:
+          -
+        Comment: "String"
+        ContinuousDeploymentPolicyId: "String"
+        CustomErrorResponses:
+          -
+        DefaultRootObject: "String"
+        Enabled: false
+        HttpVersion: "String"
+        IPV6Enabled: false
+        Origins:
+          -
+        PriceClass: "String"
+        Staging: false
+        WebACLId: "String"
+      Tags:
+        Tags
+Outputs:
