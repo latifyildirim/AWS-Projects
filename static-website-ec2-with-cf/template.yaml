@@ -29,7 +29,7 @@ Resources:
             Effect: Allow
             Principal: '*'
             Action: 's3:GetObject'
-            Resource: !Join 
+            Resource: !Join # ['', ['arn:aws:s3:::', !Ref 'KittensBucket', /*]]
               - ''
               - - 'arn:aws:s3:::'
                 - !Ref S3Bucket
@@ -76,13 +76,14 @@ Resources:
   KittenDNSName: 
     Type: AWS::Route53::RecordSetGroup
     Properties:
-      HostedZoneId: Z08932718JFQJ3TJPF9Z
+      HostedZoneId: !Ref DomainName
       RecordSets: 
-        - Name: !Ref FullDomainName
+        - Name: !Ref FullDomainName 
           Type: A
           AliasTarget:
-            HostedZoneId: Z08932718JFQJ3TJPF9Z 
+            HostedZoneId: Z2FDTNDATAQYW2  # Bu deger  dökümantaysona göre sabit olmali. Bizim kendi degerimizi yazalim dedik bayaaa vakit kaybettik. 
             DNSName: !GetAtt CF.DomainName
+              
 Outputs:
   BucketName: 
     Description: S3 Bucket URL for Kittens Website
