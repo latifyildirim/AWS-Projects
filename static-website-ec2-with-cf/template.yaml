@@ -47,25 +47,49 @@ Resources:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
-        Aliases:
-          -
-        CNAMEs:
-          -
-        CacheBehaviors:
-          -
-        Comment: "String"
-        ContinuousDeploymentPolicyId: "String"
-        CustomErrorResponses:
-          -
-        DefaultRootObject: "String"
-        Enabled: false
-        HttpVersion: "String"
-        IPV6Enabled: false
-        Origins:
-          -
-        PriceClass: "String"
-        Staging: false
-        WebACLId: "String"
-      Tags:
-        Tags
+        Aliases: 
+        - !Ref FullDomainName
+        Comment: Cloudfront Distribution pointing to Kittens S3 bucket
+        DefaultCacheBehavior:
+          AllowedMethods:  
+          - GET
+          - HEAD
+          Compress: true
+          ForwardedValues: 
+            QueryString: true 
+            Cookies:
+              Forward: none 
+          TargetOriginId: KittensOrigin  
+          ViewerProtocolPolicy: allow-all
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: 'http2'
+        Origins: 
+        - DomainName: !Select [2, !Split ["/", !GetAtt S3Bucket.WebsiteURL]] 
+          Id: KittensOrigin
+          CustomOriginConfig: 
+            OriginProtocolPolicy: http-only
+        PriceClass: PriceClass_All
+        ViewerCertificate:  
+          AcmCertificateArn: !Ref Certificate
+          SslSupportMethod: sni-only
+  KittenDNSName: 
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref DomainName 
+      RecordSets: 
+        - Name: !Ref FullDomainName
+          Type: A
+          AliasTarget:
+            HostedZoneId: Z08932718JFQJ3TJPF9Z 
+            DNSName: !GetAtt CF.DomainName
 Outputs:
+  BucketName: 
+    Description: S3 Bucket URL for Kittens Website
+    Value: !GetAtt S3Bucket.WebsiteURL
+  CloudfrontEndpoint:
+    Description: Endpoint for Kittens Cloudfront
+    Value: !GetAtt CF.DomainName
+  FullDomainName:
+    Description: Full Domain Name of my Application
+    Value: !Ref FullDomainName
