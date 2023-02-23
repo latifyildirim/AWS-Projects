@@ -74,9 +74,9 @@ Resources:
           AcmCertificateArn: !Ref Certificate
           SslSupportMethod: sni-only
   KittenDNSName: 
-    Type: AWS::Route53::RecordSetGroup
+    Type:  
     Properties:
-      HostedZoneId: !Ref DomainName 
+      HostedZoneId: Z08932718JFQJ3TJPF9Z
       RecordSets: 
         - Name: !Ref FullDomainName
           Type: A
