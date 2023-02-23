@@ -32,12 +32,12 @@ Resources:
             Resource: !Join 
               - ''
               - - 'arn:aws:s3:::'
-                - !Ref s3Bucket
+                - !Ref S3Bucket
                 - /*
   Certificate:
     Type: AWS::CertificateManager::Certificate
     Properties: 
-      CertificateTransparencyLoggingPreference: ENABLE
+      CertificateTransparencyLoggingPreference: ENABLED
       DomainName: !Ref FullDomainName # Required
       DomainValidationOptions:
         - DomainName: !Ref FullDomainName
